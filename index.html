@@ -22,19 +22,21 @@
     }
     *{box-sizing:border-box;font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif}
     html,body{height:100%;margin:0;background:var(--bg);color:var(--text);}
-    .wrap{min-height:100%;display:flex;flex-direction:column;align-items:center;padding:28px 16px}
-    header{width:100%;max-width:980px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between}
+    .wrap{min-height:100%;display:flex;flex-direction:column;align-items:center;padding:18px}
+    header{width:100%;max-width:980px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
     .brand{display:flex;gap:12px;align-items:center}
-    .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent-1),var(--accent-3));display:flex;align-items:center;justify-content:center;font-weight:700}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent-1),var(--accent-3));display:flex;align-items:center;justify-content:center;font-weight:700}
     h1{font-size:18px;margin:0}
     .controls{display:flex;gap:8px;align-items:center}
-    .panel{width:100%;max-width:980px;background:var(--panel);padding:14px;border-radius:14px;box-shadow:0 6px 20px rgba(2,6,23,0.6)}
-    .meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+    .panel{width:100%;max-width:980px;background:var(--panel);padding:12px;border-radius:12px;box-shadow:0 6px 20px rgba(2,6,23,0.6)}
+    .meta{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
     .meta .info{background:var(--card);padding:6px 10px;border-radius:8px;font-size:13px}
-    .game-area{display:flex;gap:16px}
-    .board-wrap{background:rgba(255,255,255,0.02);padding:10px;border-radius:12px}
-    .board{display:grid;grid-gap:var(--gap);background:transparent;padding:8px}
-    .cell{width:var(--cell-size-desktop);height:var(--cell-size-desktop);display:grid;place-items:center;border-radius:6px;
+    .game-area{display:flex;gap:12px}
+    .board-wrap{background:rgba(255,255,255,0.02);padding:8px;border-radius:10px;overflow:hidden}
+    .board{display:grid;grid-gap:var(--gap);background:transparent;padding:6px;justify-content:center}
+
+    /* الخلايا: width/height سيتم ضبطهم بالـ JS لتناسب الشاشة */
+    .cell{display:grid;place-items:center;border-radius:6px;
       background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));color:var(--text);font-weight:700;user-select:none;cursor:pointer;
       box-shadow: inset 0 -2px 0 rgba(0,0,0,0.25);transition:transform .06s ease, background .12s ease;font-size:14px}
     .cell:active{transform:translateY(1px)}
@@ -44,15 +46,17 @@
     .cell.hit{outline:3px solid rgba(239,68,68,0.15)}
     .n1{color:#2563eb} .n2{color:#16a34a} .n3{color:#ef4444}
     .n4{color:#7c3aed} .n5{color:#b45309} .n6{color:#0f766e}
-    .toolbar{display:flex;gap:10px;align-items:center}
-    .btn{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.03);padding:8px 12px;border-radius:8px;color:var(--text);cursor:pointer}
-    .footer{margin-top:12px;font-size:13px;color:rgba(230,238,246,0.8)}
-    @media (max-width:820px){:root{--cell-size-desktop:40px}.game-area{flex-direction:column;align-items:center}header{flex-direction:column;align-items:flex-start;gap:8px}}
-    @media (max-width:520px){:root{--cell-size-desktop:var(--cell-size-mobile);--gap:3px}.logo{width:42px;height:42px}h1{font-size:16px}}
+    .toolbar{display:flex;gap:8px;align-items:center}
+    .btn{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.03);padding:8px 10px;border-radius:8px;color:var(--text);cursor:pointer}
+    .btn[disabled]{opacity:0.45;cursor:not-allowed}
+    .footer{margin-top:10px;font-size:13px;color:rgba(230,238,246,0.8)}
+
+    @media (max-width:820px){.game-area{flex-direction:column;align-items:center}header{flex-direction:column;align-items:flex-start;gap:8px}}
+    @media (max-width:520px){.logo{width:40px;height:40px}h1{font-size:16px}}
     .hint{font-size:13px;color:rgba(230,238,246,0.85)}
     .overlay{position:fixed;left:0;top:0;right:0;bottom:0;display:none;align-items:center;justify-content:center}
     .overlay.show{display:flex}
-    .dialog{background:linear-gradient(180deg,#0b1220,#122434);padding:20px;border-radius:14px;box-shadow:0 20px 60px rgba(2,6,23,0.7);text-align:center}
+    .dialog{background:linear-gradient(180deg,#0b1220,#122434);padding:18px;border-radius:12px;box-shadow:0 20px 60px rgba(2,6,23,0.7);text-align:center}
     .dialog h2{margin:0 0 10px 0}.small{font-size:13px;color:rgba(230,238,246,0.8)}
   </style>
 </head>
@@ -77,6 +81,7 @@
           </select>
           <button id="newBtn" class="btn">إعادة تشغيل</button>
           <button id="muteBtn" class="btn">صوت: تشغيل</button>
+          <button id="hintBtn" class="btn" disabled>تلميح (30s)</button>
         </div>
       </div>
     </header>
@@ -93,12 +98,12 @@
           <div id="board" class="board"></div>
         </div>
         <div style="min-width:200px;padding-left:12px;display:flex;flex-direction:column;gap:8px;align-items:flex-start">
-          <div class="info" style="padding:10px;border-radius:10px;">تعليمات: اضغط للكشف، اضغط مطولًا أو زر يمين للفلاجز.</div>
+          <div class="info" style="padding:8px;border-radius:8px;">تعليمات: اضغط للكشف، اضغط مطولًا للفلاجز على الموبايل.</div>
           <div class="info">نصيحة: لو تطور تطبيق، استخدم الـ `WebView` أو Cordova لعمل APK سريع.</div>
         </div>
       </div>
 
-      <div class="footer">ممكن تعديل الألوان وحجم الخلايا في ملف style.css — أيضاً أضفت دعم للمس (long-press) لعمل "علم" على الموبايل.</div>
+      <div class="footer">ممكن تعديل الألوان وحجم الخلايا في ملف style.css — كما أضفت زر التلميح وصوتيات الفوز/الخسارة.</div>
     </main>
   </div>
 
@@ -113,6 +118,8 @@
   <!-- أصوات -->
   <audio id="explosionSound" preload="auto" src="https://www.soundjay.com/button/sounds/beep-07.mp3"></audio>
   <audio id="correctSound" preload="auto" src="https://www.soundjay.com/button/sounds/beep-06.mp3"></audio>
+  <audio id="winSound" preload="auto" src="https://www.soundjay.com/misc/sounds/bell-ringing-01.mp3"></audio>
+  <audio id="loseSound" preload="auto" src="https://www.soundjay.com/misc/sounds/fail-trombone-01.mp3"></audio>
 
   <script>
     // عناصر DOM
@@ -127,9 +134,12 @@
     const restart2 = document.getElementById('restart2');
     const triesEl = document.getElementById('tries');
     const muteBtn = document.getElementById('muteBtn');
+    const hintBtn = document.getElementById('hintBtn');
 
     const explosionSound = document.getElementById('explosionSound');
     const correctSound = document.getElementById('correctSound');
+    const winSound = document.getElementById('winSound');
+    const loseSound = document.getElementById('loseSound');
 
     // حالة وصلاحيات
     let gridWidth = 9, gridHeight = 9, minesCount = 10;
@@ -138,6 +148,11 @@
     let started = false; // مهم: نستخدمه لنعرف أول نقرة
     let soundEnabled = true;
     let isMobile = ('ontouchstart' in window) || navigator.maxTouchPoints>0;
+
+    // تلميح
+    let hintCooldown = 30; // ثواني
+    let lastHint = 0; // timestamp
+    let hintTimerInterval = null;
 
     function decideAuto(){
       const w = Math.max(window.innerWidth, document.documentElement.clientWidth);
@@ -190,13 +205,27 @@
       }
     }
 
+    function computeCellSize(){
+      // نحسب عرض متاح وناخد حجم خلية مناسب عشان الخلايا ما تخرجش برة الشاشة
+      const padding = 36; // بعض الحواف
+      const gapTotal = (gridWidth - 1) * 4; // استخدام --gap التقريبي
+      const maxWidth = Math.min(window.innerWidth - padding, 980);
+      const preferred = isMobile ? parseInt(getComputedStyle(document.documentElement).getPropertyValue('--cell-size-mobile')) : parseInt(getComputedStyle(document.documentElement).getPropertyValue('--cell-size-desktop'));
+      const cell = Math.floor(Math.min(preferred, (maxWidth - gapTotal) / gridWidth));
+      return Math.max(28, cell); // لا تصغر عن 28px عشان لسه مريح
+    }
+
     function resetBoard(){
       // إعادة الحالة
       started = false; opened=0; flags=0; clearInterval(timerInterval); timer=0; timerEl.textContent='0';
       boardEl.innerHTML=''; overlay.classList.remove('show');
       applyPreset(presetEl.value);
       grid = createEmptyGrid(gridWidth, gridHeight);
-      boardEl.style.gridTemplateColumns = `repeat(${gridWidth}, 1fr)`;
+
+      // ضبط حجم الخلايا ديناميكياً
+      const cellSize = computeCellSize();
+      boardEl.style.gridTemplateColumns = `repeat(${gridWidth}, ${cellSize}px)`;
+
       flagsLeftEl.textContent = minesCount;
       triesEl.textContent = tries;
 
@@ -206,6 +235,8 @@
           const c = grid[y][x];
           const el = document.createElement('div');
           el.className='cell';
+          el.style.width = cellSize + 'px';
+          el.style.height = cellSize + 'px';
           el.dataset.x=x; el.dataset.y=y;
           c.el = el;
 
@@ -213,18 +244,22 @@
           el.addEventListener('contextmenu', (e)=>{ e.preventDefault(); toggleFlag(x,y); });
 
           if (isMobile){
-            let pressTimer=null;
-            const start = ()=>{ pressTimer = setTimeout(()=>{ toggleFlag(x,y); }, 500); };
-            const cancel = ()=>{ if (pressTimer) { clearTimeout(pressTimer); pressTimer=null; } };
-            el.addEventListener('touchstart', start);
-            el.addEventListener('touchend', cancel);
-            el.addEventListener('touchmove', cancel);
-            el.addEventListener('touchcancel', cancel);
+            // Long-press صارم: نريد أن تضغط مطولاً لتضع العلم، وإذا ضغطت مطولاً مرة تانية تزيله.
+            let pressTimer=null; let pressed=false;
+            const start = (ev)=>{ ev.preventDefault(); pressed=false; pressTimer = setTimeout(()=>{ toggleFlag(x,y); pressed=true; }, 500); };
+            const end = (ev)=>{ if (pressTimer) { clearTimeout(pressTimer); pressTimer=null; } };
+            el.addEventListener('touchstart', start, {passive:false});
+            el.addEventListener('touchend', end);
+            el.addEventListener('touchmove', end);
+            el.addEventListener('touchcancel', end);
           }
 
           boardEl.appendChild(el);
         }
       }
+
+      // إعادة تفعيل زر التلميح بعد التهيئة
+      startHintTimer();
     }
 
     function onCellClick(e,x,y){
@@ -233,13 +268,13 @@
       if (cell.open || cell.flag) return;
 
       if (cell.mine){
-        // نلعب صوت الانفجار
-        if (soundEnabled){ explosionSound.currentTime = 0; explosionSound.play().catch(()=>{}); }
+        // نلعب صوت الانفجار + صوت الخسارة
+        if (soundEnabled){ explosionSound.currentTime = 0; explosionSound.play().catch(()=>{}); loseSound.currentTime = 0; loseSound.play().catch(()=>{}); }
         revealAll(false,x,y);
         return;
       }
 
-      // صوت خفيف للخلية الصحيحة (مرة واحدة بالنقرة)
+      // صوت خفيف للخلية الصحيحة
       if (soundEnabled){ correctSound.currentTime = 0; correctSound.play().catch(()=>{}); }
 
       floodOpen(x,y);
@@ -283,13 +318,12 @@
         if (c.mine){ c.el.classList.add('mine'); c.el.textContent = '💣'; }
         if (c.flag && !c.mine){ c.el.textContent='✖'; }
       }
-      // لو في لغم تم الضغط عليه
       if (hitX !== undefined && hitX !== null){ grid[hitY][hitX].el.classList.add('hit'); }
 
       tries++;
       triesEl.textContent = tries;
 
-      if (win){ showResult(true); }
+      if (win){ if (soundEnabled){ winSound.currentTime = 0; winSound.play().catch(()=>{}); } showResult(true); }
       else{ showResult(false); }
     }
 
@@ -307,19 +341,52 @@
     function startTimer(){ timerInterval = setInterval(()=>{ timer++; timerEl.textContent = timer; }, 1000); }
     function updateState(){ flagsLeftEl.textContent = Math.max(0, minesCount - flags); }
 
+    // --- تلميح ---
+    function startHintTimer(){
+      // إعادة ضبط
+      if (hintTimerInterval) clearInterval(hintTimerInterval);
+      lastHint = Date.now() - hintCooldown*1000; // متاح فوراً بعد إعادة تشغيل اللعبة
+      updateHintButton();
+      hintTimerInterval = setInterval(updateHintButton, 500);
+    }
+
+    function updateHintButton(){
+      const elapsed = (Date.now() - lastHint) / 1000;
+      const remain = Math.max(0, Math.ceil(hintCooldown - elapsed));
+      if (remain === 0){ hintBtn.disabled = false; hintBtn.textContent = 'تلميح'; }
+      else { hintBtn.disabled = true; hintBtn.textContent = `تلميح (${remain}s)`; }
+    }
+
+    function giveHint(){
+      // نجد خلية آمنة غير مكشوفة وعشوائية
+      const safe = [];
+      for(let y=0;y<gridHeight;y++) for(let x=0;x<gridWidth;x++){
+        const c = grid[y][x];
+        if (!c.open && !c.mine && !c.flag) safe.push(c);
+      }
+      if (safe.length===0) return;
+      const pick = safe[Math.floor(Math.random()*safe.length)];
+      // نكشفها
+      if (!started){ placeMines(pick.x,pick.y); startTimer(); started = true; }
+      floodOpen(pick.x, pick.y);
+      lastHint = Date.now();
+      updateHintButton();
+    }
+
     // أحداث الأزرار
     newBtn.addEventListener('click', ()=>{ resetBoard(); });
     restart2.addEventListener('click', ()=>{ resetBoard(); overlay.classList.remove('show'); });
     presetEl.addEventListener('change', ()=>{ resetBoard(); });
     window.addEventListener('resize', ()=>{ if (presetEl.value==='auto') resetBoard(); });
     muteBtn.addEventListener('click', ()=>{ soundEnabled = !soundEnabled; muteBtn.textContent = soundEnabled ? 'صوت: تشغيل' : 'صوت: إيقاف'; });
+    hintBtn.addEventListener('click', ()=>{ if (!hintBtn.disabled) giveHint(); });
 
     // تشغيل أولي
     (function init(){ applyPreset(presetEl.value); resetBoard(); })();
 
     // ملاحظات:
-    // • إن واجهت مشكلة في الصوت: المتصفحات تمنع التشغيل التلقائي، لكن الأصوات تعمل بعد تفاعل المستخدم (نقرة).
-    // • لتغيير الأصوات: عدل src في عناصر <audio> أعلى الصفحة.
+    // • إذا لم تسمع الأصوات تأكد إنك تفاعلت مع الصفحة (نقرة) لأن المتصفحات تمنع التشغيل التلقائي للأصوات.
+    // • لو عايز أضع الملفات صوت محلي (ضمن المشروع) أقدر أرفع لك ملفات .mp3 وأعدل الـ src لتكون ملفات محلية.
 
   </script>
 </body>
