@@ -1,211 +1,326 @@
-index.html
 <!doctype html>
 <html lang="ar">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>لعبة كاسحة الألغام — Minesweeper</title>
+  <title>كاسحة الألغام - النسخة المطورة</title>
   <style>
-    :root{--bg:#0f1724;--card:#0b1220;--accent:#06b6d4;--safe:#111827;--text:#e6eef8}
-    *{box-sizing:border-box;font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial}
-    html,body{height:100%;margin:0;background:linear-gradient(180deg,#071026 0%, #071a2b 100%);color:var(--text);display:flex;align-items:center;justify-content:center;padding:20px}
-    .wrap{width:100%;max-width:980px}
-    header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
-    h1{font-size:20px;margin:0}
-    .controls{margin-left:auto;display:flex;gap:8px;align-items:center}
-    .btn{background:var(--card);border:1px solid rgba(255,255,255,0.04);padding:8px 12px;border-radius:10px;color:var(--text);cursor:pointer}
-    .btn.primary{background:linear-gradient(90deg,var(--accent),#7dd3fc);color:#012;}
-    .status{display:flex;gap:8px;align-items:center}
-    .panel{background:rgba(255,255,255,0.02);padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);display:flex;gap:10px;align-items:center}
+    :root{
+      --cell-size-desktop: 36px;
+      --cell-size-mobile: 44px;
+      --gap: 4px;
 
-    .board-wrap{background:rgba(255,255,255,0.02);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
-    .board{display:grid;gap:6px}
-    .cell{width:40px;height:40px;background:linear-gradient(180deg,#0b1b2a,#08131c);display:flex;align-items:center;justify-content:center;border-radius:6px;color:var(--text);font-weight:600;user-select:none;cursor:pointer;border:2px solid rgba(255,255,255,0.02)}
-    .cell.revealed{background:linear-gradient(180deg,#9fbcd6,#dbefff);color:#032a3d;font-weight:700;cursor:default}
-    .cell.flag{background:linear-gradient(180deg,#2b4354,#1a2d38);}
-    .cell.mine{background:linear-gradient(180deg,#ff6b6b,#ff3b3b);color:#fff}
-
-    .legend{display:flex;gap:8px;align-items:center}
-
-    /* responsive */
-    @media(max-width:600px){.cell{width:34px;height:34px;font-size:14px}.wrap{padding:6px}}
+      --bg: #0f1724;
+      --panel: linear-gradient(180deg,#0b1220,#0f2436);
+      --card: rgba(255,255,255,0.03);
+      --accent-1: #7dd3fc;
+      --accent-2: #60a5fa;
+      --accent-3: #a78bfa;
+      --flag: #fb7185;
+      --mine: #ef4444;
+      --text: #e6eef6;
+    }
+    *{box-sizing:border-box;font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif}
+    html,body{height:100%;margin:0;background:var(--bg);color:var(--text);}
+    .wrap{min-height:100%;display:flex;flex-direction:column;align-items:center;padding:28px 16px}
+    header{width:100%;max-width:980px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent-1),var(--accent-3));display:flex;align-items:center;justify-content:center;font-weight:700}
+    h1{font-size:18px;margin:0}
+    .controls{display:flex;gap:8px;align-items:center}
+    .panel{width:100%;max-width:980px;background:var(--panel);padding:14px;border-radius:14px;box-shadow:0 6px 20px rgba(2,6,23,0.6)}
+    .meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+    .meta .info{background:var(--card);padding:6px 10px;border-radius:8px;font-size:13px}
+    .game-area{display:flex;gap:16px}
+    .board-wrap{background:rgba(255,255,255,0.02);padding:10px;border-radius:12px}
+    .board{display:grid;grid-gap:var(--gap);background:transparent;padding:8px}
+    .cell{width:var(--cell-size-desktop);height:var(--cell-size-desktop);display:grid;place-items:center;border-radius:6px;
+      background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));color:var(--text);font-weight:700;user-select:none;cursor:pointer;
+      box-shadow: inset 0 -2px 0 rgba(0,0,0,0.25);transition:transform .06s ease, background .12s ease;font-size:14px}
+    .cell:active{transform:translateY(1px)}
+    .cell.open{background:linear-gradient(180deg,#e6eef6, #d7e8fa);color:#0b1220;font-weight:800}
+    .cell.flag{background:linear-gradient(180deg,#ffecf0,#ffe7ee);color:var(--flag)}
+    .cell.mine{background:linear-gradient(180deg,#ffe7e7,#ffdede);color:var(--mine)}
+    .cell.hit{outline:3px solid rgba(239,68,68,0.15)}
+    .n1{color:#2563eb} .n2{color:#16a34a} .n3{color:#ef4444}
+    .n4{color:#7c3aed} .n5{color:#b45309} .n6{color:#0f766e}
+    .toolbar{display:flex;gap:10px;align-items:center}
+    .btn{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.03);padding:8px 12px;border-radius:8px;color:var(--text);cursor:pointer}
+    .footer{margin-top:12px;font-size:13px;color:rgba(230,238,246,0.8)}
+    @media (max-width:820px){:root{--cell-size-desktop:40px}.game-area{flex-direction:column;align-items:center}header{flex-direction:column;align-items:flex-start;gap:8px}}
+    @media (max-width:520px){:root{--cell-size-desktop:var(--cell-size-mobile);--gap:3px}.logo{width:42px;height:42px}h1{font-size:16px}}
+    .hint{font-size:13px;color:rgba(230,238,246,0.85)}
+    .overlay{position:fixed;left:0;top:0;right:0;bottom:0;display:none;align-items:center;justify-content:center}
+    .overlay.show{display:flex}
+    .dialog{background:linear-gradient(180deg,#0b1220,#122434);padding:20px;border-radius:14px;box-shadow:0 20px 60px rgba(2,6,23,0.7);text-align:center}
+    .dialog h2{margin:0 0 10px 0}.small{font-size:13px;color:rgba(230,238,246,0.8)}
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <div>
-        <h1>لعبة كاسحة الألغام (Minesweeper)</h1>
-        <small style="opacity:.7">متجاوبة — شغالة على موبايل وكمبيوتر</small>
+      <div class="brand">
+        <div class="logo">K</div>
+        <div>
+          <h1>كاسحة الألغام - المطورة</h1>
+          <div class="hint">شبكة متكيفة للموبايل والكمبيوتر — المربعات متقاربة ومظهر عصري</div>
+        </div>
       </div>
 
       <div class="controls">
-        <div class="panel status">
-          <div>ألغام: <span id="mineCount">0</span></div>
-          <div>وقت: <span id="timer">0</span> s</div>
-          <button class="btn" id="reset">إعادة</button>
+        <div class="toolbar">
+          <select id="preset" class="btn">
+            <option value="easy">سهل - 9x9 - 10 ألغام</option>
+            <option value="normal">عادي - 16x16 - 40 ألغام</option>
+            <option value="hard">صعب - 24x16 - 99 ألغام</option>
+            <option value="auto">تلقائي حسب الجهاز</option>
+          </select>
+          <button id="newBtn" class="btn">إعادة تشغيل</button>
+          <button id="muteBtn" class="btn">صوت: تشغيل</button>
         </div>
-
-        <select id="difficulty" class="btn" aria-label="اختيار مستوى">
-          <option value="easy">سهل (9×9 — 10 ألغام)</option>
-          <option value="medium">متوسط (16×16 — 40 ألغام)</option>
-          <option value="hard">صعب (16×30 — 99 ألغام)</option>
-        </select>
-
       </div>
     </header>
 
-    <main class="board-wrap">
-      <div id="board" class="board" role="grid" aria-label="لوحة كاسحة الألغام"></div>
-    </main>
+    <main class="panel">
+      <div class="meta">
+        <div class="info">الوقت: <span id="timer">0</span> ث</div>
+        <div class="info">الألغام المتبقية: <span id="flagsLeft">0</span></div>
+        <div class="info">محاولات: <span id="tries">0</span></div>
+      </div>
 
-    <footer style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;opacity:.9">
-      <div class="legend">اضغط للكشف — طول الضغطة لتعلّم العلم (أو استخدم الزر الأيمن)</div>
-      <div style="opacity:.7;font-size:13px">مبني بواسطة مساعد ChatGPT</div>
-    </footer>
+      <div class="game-area">
+        <div class="board-wrap">
+          <div id="board" class="board"></div>
+        </div>
+        <div style="min-width:200px;padding-left:12px;display:flex;flex-direction:column;gap:8px;align-items:flex-start">
+          <div class="info" style="padding:10px;border-radius:10px;">تعليمات: اضغط للكشف، اضغط مطولًا أو زر يمين للفلاجز.</div>
+          <div class="info">نصيحة: لو تطور تطبيق، استخدم الـ `WebView` أو Cordova لعمل APK سريع.</div>
+        </div>
+      </div>
+
+      <div class="footer">ممكن تعديل الألوان وحجم الخلايا في ملف style.css — أيضاً أضفت دعم للمس (long-press) لعمل "علم" على الموبايل.</div>
+    </main>
   </div>
 
-<script>
-// Minesweeper core
-(function(){
-  const boardEl = document.getElementById('board');
-  const mineCountEl = document.getElementById('mineCount');
-  const timerEl = document.getElementById('timer');
-  const resetBtn = document.getElementById('reset');
-  const diffSel = document.getElementById('difficulty');
+  <div id="overlay" class="overlay">
+    <div class="dialog">
+      <h2 id="resultTitle">انتهت اللعبة</h2>
+      <div class="small" id="resultText"></div>
+      <div style="margin-top:12px"><button id="restart2" class="btn">حسناً - أعد المحاولة</button></div>
+    </div>
+  </div>
 
-  let cols=9, rows=9, mines=10;
-  let grid=[]; // {el, r, c, mine, revealed, flagged, adj}
-  let timer=null, time=0, started=false, remainingMines=0, cellsLeft=0;
+  <!-- أصوات -->
+  <audio id="explosionSound" preload="auto" src="https://www.soundjay.com/button/sounds/beep-07.mp3"></audio>
+  <audio id="correctSound" preload="auto" src="https://www.soundjay.com/button/sounds/beep-06.mp3"></audio>
 
-  function setDifficulty(v){
-    if(v==='easy'){rows=9;cols=9;mines=10}
-    else if(v==='medium'){rows=16;cols=16;mines=40}
-    else {rows=16;cols=30;mines=99}
-  }
+  <script>
+    // عناصر DOM
+    const boardEl = document.getElementById('board');
+    const timerEl = document.getElementById('timer');
+    const flagsLeftEl = document.getElementById('flagsLeft');
+    const presetEl = document.getElementById('preset');
+    const newBtn = document.getElementById('newBtn');
+    const overlay = document.getElementById('overlay');
+    const resultTitle = document.getElementById('resultTitle');
+    const resultText = document.getElementById('resultText');
+    const restart2 = document.getElementById('restart2');
+    const triesEl = document.getElementById('tries');
+    const muteBtn = document.getElementById('muteBtn');
 
-  function init(){
-    setDifficulty(diffSel.value);
-    grid=[];boardEl.innerHTML='';boardEl.style.gridTemplateColumns=`repeat(${cols},auto)`;
-    for(let r=0;r<rows;r++){
-      for(let c=0;c<cols;c++){
-        const div=document.createElement('div');
-        div.className='cell';
-        div.dataset.r=r;div.dataset.c=c;div.tabIndex=0;
-        boardEl.appendChild(div);
-        grid.push({el:div,r,c,mine:false,revealed:false,flagged:false,adj:0});
+    const explosionSound = document.getElementById('explosionSound');
+    const correctSound = document.getElementById('correctSound');
+
+    // حالة وصلاحيات
+    let gridWidth = 9, gridHeight = 9, minesCount = 10;
+    let grid = [];
+    let opened = 0, flags = 0, timer=0, timerInterval=null, tries=0;
+    let started = false; // مهم: نستخدمه لنعرف أول نقرة
+    let soundEnabled = true;
+    let isMobile = ('ontouchstart' in window) || navigator.maxTouchPoints>0;
+
+    function decideAuto(){
+      const w = Math.max(window.innerWidth, document.documentElement.clientWidth);
+      if (w < 520){ gridWidth = 9; gridHeight = 12; minesCount = 12; }
+      else if (w < 900){ gridWidth = 12; gridHeight = 16; minesCount = 30; }
+      else { gridWidth = 16; gridHeight = 16; minesCount = 40; }
+    }
+
+    function applyPreset(preset){
+      if (preset === 'easy'){ gridWidth=9; gridHeight=9; minesCount=10; }
+      else if (preset === 'normal'){ gridWidth=16; gridHeight=16; minesCount=40; }
+      else if (preset === 'hard'){ gridWidth=24; gridHeight=16; minesCount=99; }
+      else if (preset === 'auto'){ decideAuto(); }
+    }
+
+    function createEmptyGrid(w,h){
+      const arr = [];
+      for(let y=0;y<h;y++){
+        const row = [];
+        for(let x=0;x<w;x++){
+          row.push({x,y, mine:false, open:false, flag:false, num:0, el:null});
+        }
+        arr.push(row);
       }
+      return arr;
     }
-    remainingMines=mines;cellsLeft=rows*cols-mines;mineCountEl.textContent=remainingMines;
-    started=false;stopTimer();time=0;timerEl.textContent='0';
 
-    attachHandlers();
-    placeMinesRandom();
-    computeAdjacents();
-  }
-
-  function idx(r,c){return r*cols+c}
-  function neighbors(r,c){
-    const arr=[];
-    for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){
-      if(dr===0 && dc===0) continue; const nr=r+dr,nc=c+dc;
-      if(nr>=0 && nr<rows && nc>=0 && nc<cols) arr.push(grid[idx(nr,nc)]);
-    }
-    return arr;
-  }
-
-  function placeMinesRandom(){
-    let toPlace=mines; const total=rows*cols;
-    while(toPlace>0){
-      const i=Math.floor(Math.random()*total);
-      if(!grid[i].mine){grid[i].mine=true;toPlace--}
-    }
-  }
-
-  function computeAdjacents(){
-    grid.forEach(cell=>{if(cell.mine){cell.adj=-1;return}
-      const n=neighbors(cell.r,cell.c); cell.adj=n.filter(x=>x.mine).length;
-    });
-  }
-
-  function attachHandlers(){
-    grid.forEach(cell=>{
-      const el=cell.el;
-      // left click or tap
-      el.onpointerdown = (e)=>{
-        // start long-press detection for mobile flagging
-        el._pressTimer=setTimeout(()=>{
-          toggleFlag(cell);
-        },500);
-      };
-      el.onpointerup = (e)=>{
-        clearTimeout(el._pressTimer);
-      };
-      el.onclick = (e)=>{
-        if(cell.flagged || cell.revealed) return;
-        revealCell(cell);
-      };
-      el.oncontextmenu=(ev)=>{ev.preventDefault(); toggleFlag(cell);};
-      el.onkeydown=(ev)=>{
-        if(ev.key==='Enter' || ev.key===' ') {ev.preventDefault(); if(!cell.revealed) revealCell(cell)}
-        if(ev.key==='f' || ev.key==='F') {ev.preventDefault(); toggleFlag(cell)}
+    function placeMines(firstX, firstY){
+      let placed=0;
+      while(placed < minesCount){
+        const rx = Math.floor(Math.random()*gridWidth);
+        const ry = Math.floor(Math.random()*gridHeight);
+        const cell = grid[ry][rx];
+        if (cell.mine) continue;
+        if (Math.abs(rx-firstX)<=1 && Math.abs(ry-firstY)<=1) continue;
+        cell.mine = true; placed++;
       }
-    });
-  }
-
-  function startTimer(){if(started) return; started=true; timer=setInterval(()=>{time++;timerEl.textContent=time},1000)}
-  function stopTimer(){if(timer){clearInterval(timer);timer=null}started=false}
-
-  function revealCell(cell){
-    if(!started) startTimer();
-    if(cell.revealed || cell.flagged) return;
-    cell.revealed=true; cell.el.classList.add('revealed');
-    if(cell.mine){
-      cell.el.classList.add('mine'); cell.el.textContent='💣';
-      gameOver(false); return;
-    }
-    cellsLeft--;
-    if(cell.adj>0){ cell.el.textContent=cell.adj; cell.el.style.color=colorForNumber(cell.adj)}
-    else { // flood fill
-      const q=[cell];
-      while(q.length){
-        const cur=q.shift();
-        neighbors(cur.r,cur.c).forEach(n=>{
-          if(!n.revealed && !n.mine && !n.flagged){n.revealed=true; n.el.classList.add('revealed'); cellsLeft--; if(n.adj>0){n.el.textContent=n.adj; n.el.style.color=colorForNumber(n.adj)} else {q.push(n)}}
-        });
+      for(let y=0;y<gridHeight;y++){
+        for(let x=0;x<gridWidth;x++){
+          const c = grid[y][x];
+          if (c.mine) continue;
+          let count=0;
+          for(let dy=-1;dy<=1;dy++) for(let dx=-1;dx<=1;dx++){
+            const nx=x+dx, ny=y+dy;
+            if (nx<0||ny<0||nx>=gridWidth||ny>=gridHeight) continue;
+            if (grid[ny][nx].mine) count++;
+          }
+          c.num = count;
+        }
       }
     }
 
-    if(cellsLeft===0) gameOver(true);
-  }
+    function resetBoard(){
+      // إعادة الحالة
+      started = false; opened=0; flags=0; clearInterval(timerInterval); timer=0; timerEl.textContent='0';
+      boardEl.innerHTML=''; overlay.classList.remove('show');
+      applyPreset(presetEl.value);
+      grid = createEmptyGrid(gridWidth, gridHeight);
+      boardEl.style.gridTemplateColumns = `repeat(${gridWidth}, 1fr)`;
+      flagsLeftEl.textContent = minesCount;
+      triesEl.textContent = tries;
 
-  function colorForNumber(n){
-    const map={1:'#0b69a3',2:'#10893b',3:'#c01010',4:'#0a2c6b',5:'#7f1d1d',6:'#09504d',7:'#111',8:'#777'}; return map[n]||'#000'
-  }
+      // إنشاء عناصر الخلايا
+      for(let y=0;y<gridHeight;y++){
+        for(let x=0;x<gridWidth;x++){
+          const c = grid[y][x];
+          const el = document.createElement('div');
+          el.className='cell';
+          el.dataset.x=x; el.dataset.y=y;
+          c.el = el;
 
-  function toggleFlag(cell){
-    if(cell.revealed) return;
-    cell.flagged=!cell.flagged; cell.el.classList.toggle('flag',cell.flagged);
-    cell.el.textContent = cell.flagged ? '⚑' : '';
-    remainingMines += cell.flagged ? -1 : +1;
-    mineCountEl.textContent = remainingMines;
-  }
+          el.addEventListener('click', (e)=>{ onCellClick(e, x, y); });
+          el.addEventListener('contextmenu', (e)=>{ e.preventDefault(); toggleFlag(x,y); });
 
-  function revealAllMines(){grid.forEach(c=>{if(c.mine){c.el.classList.add('revealed','mine'); if(!c.flagged) c.el.textContent='💣'}})}
+          if (isMobile){
+            let pressTimer=null;
+            const start = ()=>{ pressTimer = setTimeout(()=>{ toggleFlag(x,y); }, 500); };
+            const cancel = ()=>{ if (pressTimer) { clearTimeout(pressTimer); pressTimer=null; } };
+            el.addEventListener('touchstart', start);
+            el.addEventListener('touchend', cancel);
+            el.addEventListener('touchmove', cancel);
+            el.addEventListener('touchcancel', cancel);
+          }
 
-  function gameOver(won){stopTimer();
-    if(won){setTimeout(()=>alert('مبروك! فزت باللعبة — الوقت: '+time+'s'),100)}
-    else {revealAllMines(); setTimeout(()=>alert('انتهت اللعبة! ضغطة على إعادة للمحاولة'),100)}
-  }
+          boardEl.appendChild(el);
+        }
+      }
+    }
 
-  // Glue: reset & difficulty
-  resetBtn.addEventListener('click',()=>{init()});
-  diffSel.addEventListener('change',()=>{init()});
+    function onCellClick(e,x,y){
+      const cell = grid[y][x];
+      if (!started){ placeMines(x,y); startTimer(); started = true; }
+      if (cell.open || cell.flag) return;
 
-  // init first time
-  init();
+      if (cell.mine){
+        // نلعب صوت الانفجار
+        if (soundEnabled){ explosionSound.currentTime = 0; explosionSound.play().catch(()=>{}); }
+        revealAll(false,x,y);
+        return;
+      }
 
-})();
-</script>
+      // صوت خفيف للخلية الصحيحة (مرة واحدة بالنقرة)
+      if (soundEnabled){ correctSound.currentTime = 0; correctSound.play().catch(()=>{}); }
+
+      floodOpen(x,y);
+      updateState();
+      checkWin();
+    }
+
+    function floodOpen(sx,sy){
+      const stack = [[sx,sy]];
+      while(stack.length){
+        const [x,y] = stack.pop();
+        const c = grid[y][x];
+        if (c.open || c.flag) continue;
+        c.open = true; opened++;
+        c.el.classList.add('open');
+        if (c.num>0){ c.el.textContent = c.num; c.el.classList.add('n'+c.num); }
+        if (c.num===0){
+          for(let dy=-1;dy<=1;dy++) for(let dx=-1;dx<=1;dx++){
+            const nx=x+dx, ny=y+dy;
+            if (nx<0||ny<0||nx>=gridWidth||ny>=gridHeight) continue;
+            if (!grid[ny][nx].open && !grid[ny][nx].mine) stack.push([nx,ny]);
+          }
+        }
+      }
+    }
+
+    function toggleFlag(x,y){
+      const c = grid[y][x];
+      if (c.open) return;
+      c.flag = !c.flag;
+      if (c.flag){ c.el.classList.add('flag'); flags++; c.el.textContent='⚑'; }
+      else{ c.el.classList.remove('flag'); flags--; c.el.textContent=''; }
+      flagsLeftEl.textContent = Math.max(0, minesCount - flags);
+    }
+
+    function revealAll(win, hitX, hitY){
+      clearInterval(timerInterval);
+      // نكشف الألغام ونظهر النتائج
+      for(let y=0;y<gridHeight;y++) for(let x=0;x<gridWidth;x++){
+        const c = grid[y][x];
+        if (c.mine){ c.el.classList.add('mine'); c.el.textContent = '💣'; }
+        if (c.flag && !c.mine){ c.el.textContent='✖'; }
+      }
+      // لو في لغم تم الضغط عليه
+      if (hitX !== undefined && hitX !== null){ grid[hitY][hitX].el.classList.add('hit'); }
+
+      tries++;
+      triesEl.textContent = tries;
+
+      if (win){ showResult(true); }
+      else{ showResult(false); }
+    }
+
+    function checkWin(){
+      const total = gridWidth*gridHeight;
+      if (opened === total - minesCount){ revealAll(true); }
+    }
+
+    function showResult(win){
+      if (!win){ resultTitle.textContent='خسرت!'; resultText.textContent = 'لقد نفجر لغم... حاول مرة أخرى.'; }
+      else{ resultTitle.textContent='مبروك!'; resultText.textContent = `فزت في ${timer} ثانية — محاولات: ${tries}`; }
+      overlay.classList.add('show');
+    }
+
+    function startTimer(){ timerInterval = setInterval(()=>{ timer++; timerEl.textContent = timer; }, 1000); }
+    function updateState(){ flagsLeftEl.textContent = Math.max(0, minesCount - flags); }
+
+    // أحداث الأزرار
+    newBtn.addEventListener('click', ()=>{ resetBoard(); });
+    restart2.addEventListener('click', ()=>{ resetBoard(); overlay.classList.remove('show'); });
+    presetEl.addEventListener('change', ()=>{ resetBoard(); });
+    window.addEventListener('resize', ()=>{ if (presetEl.value==='auto') resetBoard(); });
+    muteBtn.addEventListener('click', ()=>{ soundEnabled = !soundEnabled; muteBtn.textContent = soundEnabled ? 'صوت: تشغيل' : 'صوت: إيقاف'; });
+
+    // تشغيل أولي
+    (function init(){ applyPreset(presetEl.value); resetBoard(); })();
+
+    // ملاحظات:
+    // • إن واجهت مشكلة في الصوت: المتصفحات تمنع التشغيل التلقائي، لكن الأصوات تعمل بعد تفاعل المستخدم (نقرة).
+    // • لتغيير الأصوات: عدل src في عناصر <audio> أعلى الصفحة.
+
+  </script>
 </body>
 </html>
