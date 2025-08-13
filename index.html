@@ -1,67 +1,40 @@
 <!doctype html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>كاسحة الألغام - النسخة المطورة</title>
+  <title>كاسحة الألغام – أونلاين مع تسجيل دخول ولوحة متصدرين</title>
   <style>
     :root{
       --cell-size-desktop: 36px;
       --cell-size-mobile: 44px;
       --gap: 4px;
-
-      --bg: #0f1724;
-      --panel: linear-gradient(180deg,#0b1220,#0f2436);
-      --card: rgba(255,255,255,0.03);
-      --accent-1: #7dd3fc;
-      --accent-2: #60a5fa;
-      --accent-3: #a78bfa;
-      --flag: #fb7185;
-      --mine: #ef4444;
-      --text: #e6eef6;
+      --bg: #0f1724; --panel: linear-gradient(180deg,#0b1220,#0f2436);
+      --card: rgba(255,255,255,0.06);
+      --accent-1: #7dd3fc; --accent-2: #60a5fa; --accent-3: #a78bfa;
+      --flag: #fb7185; --mine: #ef4444; --text: #e6eef6;
     }
     *{box-sizing:border-box;font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif}
-    html,body{height:100%;margin:0;background:var(--bg);color:var(--text);}
-    .wrap{min-height:100%;display:flex;flex-direction:column;align-items:center;padding:18px}
-    header{width:100%;max-width:980px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+    html,body{height:100%;margin:0;background:var(--bg);color:var(--text)}
+    .wrap{min-height:100%;display:flex;flex-direction:column;align-items:center;padding:18px;gap:12px}
+    header{width:100%;max-width:1100px;display:flex;gap:12px;align-items:center;justify-content:space-between}
     .brand{display:flex;gap:12px;align-items:center}
     .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent-1),var(--accent-3));display:flex;align-items:center;justify-content:center;font-weight:700}
     h1{font-size:18px;margin:0}
     .controls{display:flex;gap:8px;align-items:center}
-    .panel{width:100%;max-width:980px;background:var(--panel);padding:12px;border-radius:12px;box-shadow:0 6px 20px rgba(2,6,23,0.6)}
+
+    .panel{width:100%;max-width:1100px;background:var(--panel);padding:12px;border-radius:12px;box-shadow:0 6px 20px rgba(2,6,23,0.6)}
     .meta{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
     .meta .info{background:var(--card);padding:6px 10px;border-radius:8px;font-size:13px}
-    .game-area{display:flex;gap:12px}
-    .board-wrap{
-      background:rgba(255,255,255,0.02);
-      padding:8px;
-      border-radius:10px;
-      overflow:hidden;
-      width: 100%;
-      max-width: 980px;
-    }
-    .board{
-      display:grid;
-      grid-gap:var(--gap);
-      background:transparent;
-      padding:6px;
-      justify-content:center;
-    }
 
-    .cell{
-      display:grid;
-      place-items:center;
-      border-radius:6px;
-      background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));
-      color:var(--text);
-      font-weight:700;
-      user-select:none;
-      cursor:pointer;
-      box-shadow: inset 0 -2px 0 rgba(0,0,0,0.25);
-      transition:transform .06s ease, background .12s ease;
-      font-size:14px;
-      touch-action: manipulation;
-    }
+    .game-area{display:grid;grid-template-columns: 1fr 280px;gap:12px}
+    .board-wrap{background:rgba(255,255,255,0.03);padding:8px;border-radius:10px;overflow:hidden}
+    .board{display:grid;grid-gap:var(--gap);background:transparent;padding:6px;justify-content:center}
+
+    /* الخلايا */
+    .cell{display:grid;place-items:center;border-radius:6px;
+      background:linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02));color:var(--text);font-weight:700;user-select:none;cursor:pointer;
+      box-shadow: inset 0 -2px 0 rgba(0,0,0,0.25);transition:transform .06s ease, background .12s ease;font-size:14px}
     .cell:active{transform:translateY(1px)}
     .cell.open{background:linear-gradient(180deg,#e6eef6, #d7e8fa);color:#0b1220;font-weight:800}
     .cell.flag{background:linear-gradient(180deg,#ffecf0,#ffe7ee);color:var(--flag)}
@@ -69,32 +42,33 @@
     .cell.hit{outline:3px solid rgba(239,68,68,0.15)}
     .n1{color:#2563eb} .n2{color:#16a34a} .n3{color:#ef4444}
     .n4{color:#7c3aed} .n5{color:#b45309} .n6{color:#0f766e}
+
     .toolbar{display:flex;gap:8px;align-items:center}
     .btn{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.03);padding:8px 10px;border-radius:8px;color:var(--text);cursor:pointer}
     .btn[disabled]{opacity:0.45;cursor:not-allowed}
+
+    /* سايدبار المتصدرين */
+    .sidebar{background:rgba(255,255,255,0.03);padding:10px;border-radius:10px;display:flex;flex-direction:column;gap:8px}
+    .side-title{display:flex;align-items:center;justify-content:space-between}
+    .leader-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+    .leader-item{display:flex;justify-content:space-between;gap:8px;background:rgba(255,255,255,0.04);padding:8px;border-radius:8px}
+
+    /* لوحة الدخول */
+    .auth{display:flex;gap:8px;align-items:center;background:rgba(255,255,255,0.04);padding:8px;border-radius:10px}
+    .auth input{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);color:var(--text);border-radius:8px;padding:6px 8px}
+
     .footer{margin-top:10px;font-size:13px;color:rgba(230,238,246,0.8)}
 
-    @media (max-width:820px){
-      .game-area{flex-direction:column;align-items:center}
-      header{flex-direction:column;align-items:flex-start;gap:8px}
+    @media (max-width:900px){
+      .game-area{grid-template-columns: 1fr}
+      .sidebar{order:-1}
     }
-    @media (max-width:520px){
-      .logo{width:40px;height:40px}
-      h1{font-size:16px}
-    }
+
     .hint{font-size:13px;color:rgba(230,238,246,0.85)}
-    .overlay{
-      position:fixed;left:0;top:0;right:0;bottom:0;
-      display:none;align-items:center;justify-content:center
-    }
+    .overlay{position:fixed;left:0;top:0;right:0;bottom:0;display:none;align-items:center;justify-content:center}
     .overlay.show{display:flex}
-    .dialog{
-      background:linear-gradient(180deg,#0b1220,#122434);
-      padding:18px;border-radius:12px;box-shadow:0 20px 60px rgba(2,6,23,0.7);
-      text-align:center
-    }
-    .dialog h2{margin:0 0 10px 0}
-    .small{font-size:13px;color:rgba(230,238,246,0.8)}
+    .dialog{background:linear-gradient(180deg,#0b1220,#122434);padding:18px;border-radius:12px;box-shadow:0 20px 60px rgba(2,6,23,0.7);text-align:center}
+    .dialog h2{margin:0 0 10px 0}.small{font-size:13px;color:rgba(230,238,246,0.8)}
   </style>
 </head>
 <body>
@@ -103,22 +77,25 @@
       <div class="brand">
         <div class="logo">K</div>
         <div>
-          <h1>كاسحة الألغام - المطورة</h1>
-          <div class="hint">شبكة متكيفة للموبايل والكمبيوتر — المربعات متقاربة ومظهر عصري</div>
+          <h1>كاسحة الألغام – أونلاين</h1>
+          <div class="hint">تسجيل دخول + نقاط + لوحة متصدرين (Top 10)</div>
         </div>
       </div>
 
-      <div class="controls">
-        <div class="toolbar">
-          <select id="preset" class="btn">
-            <option value="easy">سهل - 9x9 - 10 ألغام</option>
-            <option value="normal">عادي - 16x16 - 40 ألغام</option>
-            <option value="hard">صعب - 24x16 - 99 ألغام</option>
-            <option value="auto">تلقائي حسب الجهاز</option>
-          </select>
-          <button id="newBtn" class="btn">إعادة تشغيل</button>
-          <button id="muteBtn" class="btn">صوت: تشغيل</button>
-          <button id="hintBtn" class="btn" disabled>تلميح (30s)</button>
+      <!-- لوحة الدخول/الحساب -->
+      <div class="auth" id="authBox">
+        <div id="whenSignedOut">
+          <button class="btn" id="googleBtn">تسجيل بجوجل</button>
+          <input id="email" type="email" placeholder="إيميل" />
+          <input id="pass" type="password" placeholder="كلمة السر" />
+          <button class="btn" id="emailSignUp">تسجيل</button>
+          <button class="btn" id="emailSignIn">دخول</button>
+        </div>
+        <div id="whenSignedIn" style="display:none;gap:8px;align-items:center">
+          <span>مرحباً، <b id="dispName">لاعب</b> — نقاطك: <b id="myPoints">0</b></span>
+          <input id="usernameInput" placeholder="اسم المستخدم" style="width:140px" />
+          <button class="btn" id="saveUsername">حفظ الاسم</button>
+          <button class="btn" id="signOutBtn">خروج</button>
         </div>
       </div>
     </header>
@@ -128,19 +105,35 @@
         <div class="info">الوقت: <span id="timer">0</span> ث</div>
         <div class="info">الألغام المتبقية: <span id="flagsLeft">0</span></div>
         <div class="info">محاولات: <span id="tries">0</span></div>
+        <div class="toolbar">
+          <select id="preset" class="btn">
+            <option value="easy">سهل - 9x9 - 10 ألغام (10 نقاط)</option>
+            <option value="normal">عادي - 16x16 - 40 ألغام (40 نقطة)</option>
+            <option value="hard">صعب - 24x16 - 99 ألغام (99 نقطة)</option>
+            <option value="auto">تلقائي حسب الجهاز</option>
+          </select>
+          <button id="newBtn" class="btn">إعادة تشغيل</button>
+          <button id="muteBtn" class="btn">صوت: تشغيل</button>
+          <button id="hintBtn" class="btn" disabled>تلميح (30s)</button>
+          <button id="toggleLeaders" class="btn">🏆 المتصدرين</button>
+        </div>
       </div>
 
       <div class="game-area">
         <div class="board-wrap">
           <div id="board" class="board"></div>
         </div>
-        <div style="min-width:200px;padding-left:12px;display:flex;flex-direction:column;gap:8px;align-items:flex-start">
-          <div class="info" style="padding:8px;border-radius:8px;">تعليمات: اضغط للكشف، اضغط مطولًا للفلاجز على الموبايل.</div>
-          <div class="info">نصيحة: لو تطور تطبيق، استخدم الـ `WebView` أو Cordova لعمل APK سريع.</div>
-        </div>
+
+        <aside class="sidebar" id="leadersBox" style="display:none">
+          <div class="side-title">
+            <strong>أفضل 10 لاعبين</strong>
+            <span id="lastUpdate" class="hint"></span>
+          </div>
+          <ul id="leaders" class="leader-list"></ul>
+        </aside>
       </div>
 
-      <div class="footer">ممكن تعديل الألوان وحجم الخلايا في ملف style.css — كما أضفت زر التلميح وصوتيات الفوز/الخسارة.</div>
+      <div class="footer">النقاط تُحتسب على السيرفر لتقليل الغش. تحتاج لإضافة إعدادات Firebase (انظر التعليقات أسفل الصفحة).</div>
     </main>
   </div>
 
@@ -158,8 +151,37 @@
   <audio id="winSound" preload="auto" src="https://www.soundjay.com/misc/sounds/bell-ringing-01.mp3"></audio>
   <audio id="loseSound" preload="auto" src="https://www.soundjay.com/misc/sounds/fail-trombone-01.mp3"></audio>
 
+  <!-- Firebase SDK (Compat لسهولة الدمج في صفحة واحدة) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-functions-compat.js"></script>
+
   <script>
-    // عناصر DOM
+    /******************** إعداد Firebase ********************/
+    // 1) أنشئ مشروع على Firebase ثم فعّل Authentication (Google + Email/Password) و Firestore و Functions
+    // 2) الإعدادات التالية أخذتها من المشروع الذي زوّدتني به — إذا أردت تغيّرها عدل القيم هنا
+    const firebaseConfig = {
+      apiKey: "AIzaSyBGqFj5J8x6O2Y5NjOSxh6_ZgBDp1VqQac",
+      authDomain: "minesweepergame-29187.firebaseapp.com",
+      projectId: "minesweepergame-29187",
+      storageBucket: "minesweepergame-29187.firebasestorage.app",
+      messagingSenderId: "1039265745118",
+      appId: "1:1039265745118:web:be80c215117825ee395a4f",
+      measurementId: "G-KTV9CS2P42"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    const functions = firebase.functions();
+
+    // callable function (سنجرب secureRecordWin ثم awardWin كبدائل)
+    let awardWinCallable = null;
+    try { awardWinCallable = functions.httpsCallable('secureRecordWin'); } catch(e) {
+      try { awardWinCallable = functions.httpsCallable('awardWin'); } catch(e2) { awardWinCallable = null; }
+    }
+
+    /******************** عناصر DOM الخاصة باللعبة ********************/
     const boardEl = document.getElementById('board');
     const timerEl = document.getElementById('timer');
     const flagsLeftEl = document.getElementById('flagsLeft');
@@ -178,18 +200,41 @@
     const winSound = document.getElementById('winSound');
     const loseSound = document.getElementById('loseSound');
 
-    // حالة وصلاحيات
+    // Auth UI
+    const whenSignedOut = document.getElementById('whenSignedOut');
+    const whenSignedIn = document.getElementById('whenSignedIn');
+    const googleBtn = document.getElementById('googleBtn');
+    const emailSignUp = document.getElementById('emailSignUp');
+    const emailSignIn = document.getElementById('emailSignIn');
+    const emailInput = document.getElementById('email');
+    const passInput = document.getElementById('pass');
+    const signOutBtn = document.getElementById('signOutBtn');
+    const dispName = document.getElementById('dispName');
+    const myPointsEl = document.getElementById('myPoints');
+    const usernameInput = document.getElementById('usernameInput');
+    const saveUsernameBtn = document.getElementById('saveUsername');
+
+    // Leaders
+    const leadersBox = document.getElementById('leadersBox');
+    const toggleLeaders = document.getElementById('toggleLeaders');
+    const leadersEl = document.getElementById('leaders');
+    const lastUpdateEl = document.getElementById('lastUpdate');
+
+    // حالة اللعبة
     let gridWidth = 9, gridHeight = 9, minesCount = 10;
     let grid = [];
     let opened = 0, flags = 0, timer=0, timerInterval=null, tries=0;
-    let started = false;
+    let started = false; // أول نقرة
     let soundEnabled = true;
     let isMobile = ('ontouchstart' in window) || navigator.maxTouchPoints>0;
 
     // تلميح
-    let hintCooldown = 30;
-    let lastHint = 0;
+    let hintCooldown = 30; // ثواني
+    let lastHint = 0; // timestamp
     let hintTimerInterval = null;
+
+    // نقاط المستويات
+    const levelPoints = { easy:10, normal:40, hard:99 };
 
     function decideAuto(){
       const w = Math.max(window.innerWidth, document.documentElement.clientWidth);
@@ -224,7 +269,7 @@
         const ry = Math.floor(Math.random()*gridHeight);
         const cell = grid[ry][rx];
         if (cell.mine) continue;
-        if (Math.abs(rx-firstX)<=1 && Math.abs(ry-firstY)<=1) continue;
+        if (Math.abs(rx-firstX)<=1 && Math.abs(ry-firstY)<=1) continue; // حماية أول نقرة
         cell.mine = true; placed++;
       }
       for(let y=0;y<gridHeight;y++){
@@ -246,9 +291,7 @@
       const padding = 36;
       const gapTotal = (gridWidth - 1) * 4;
       const maxWidth = Math.min(window.innerWidth - padding, 980);
-      const preferred = isMobile
-        ? parseInt(getComputedStyle(document.documentElement).getPropertyValue('--cell-size-mobile'))
-        : parseInt(getComputedStyle(document.documentElement).getPropertyValue('--cell-size-desktop'));
+      const preferred = isMobile ? parseInt(getComputedStyle(document.documentElement).getPropertyValue('--cell-size-mobile')) : parseInt(getComputedStyle(document.documentElement).getPropertyValue('--cell-size-desktop'));
       const cell = Math.floor(Math.min(preferred, (maxWidth - gapTotal) / gridWidth));
       return Math.max(28, cell);
     }
@@ -279,8 +322,8 @@
           el.addEventListener('contextmenu', (e)=>{ e.preventDefault(); toggleFlag(x,y); });
 
           if (isMobile){
-            let pressTimer=null; let pressed=false;
-            const start = (ev)=>{ ev.preventDefault(); pressed=false; pressTimer = setTimeout(()=>{ toggleFlag(x,y); pressed=true; }, 500); };
+            let pressTimer=null;
+            const start = (ev)=>{ ev.preventDefault(); pressTimer = setTimeout(()=>{ toggleFlag(x,y); }, 500); };
             const end = (ev)=>{ if (pressTimer) { clearTimeout(pressTimer); pressTimer=null; } };
             el.addEventListener('touchstart', start, {passive:false});
             el.addEventListener('touchend', end);
@@ -291,6 +334,7 @@
           boardEl.appendChild(el);
         }
       }
+
       startHintTimer();
     }
 
@@ -300,10 +344,7 @@
       if (cell.open || cell.flag) return;
 
       if (cell.mine){
-        if (soundEnabled){
-          explosionSound.currentTime = 0; explosionSound.play().catch(()=>{});
-          loseSound.currentTime = 0; loseSound.play().catch(()=>{});
-        }
+        if (soundEnabled){ explosionSound.currentTime = 0; explosionSound.play().catch(()=>{}); loseSound.currentTime = 0; loseSound.play().catch(()=>{}); }
         revealAll(false,x,y);
         return;
       }
@@ -340,113 +381,219 @@
       c.flag = !c.flag;
       if (c.flag){ c.el.classList.add('flag'); flags++; c.el.textContent='⚑'; }
       else{ c.el.classList.remove('flag'); flags--; c.el.textContent=''; }
-      flagsLeftEl.textContent = minesCount - flags;
-      checkWin();
+      flagsLeftEl.textContent = Math.max(0, minesCount - flags);
     }
 
-    function revealAll(win,xHit,yHit){
+    function revealAll(win, hitX, hitY){
       clearInterval(timerInterval);
-      for(let y=0;y<gridHeight;y++){
-        for(let x=0;x<gridWidth;x++){
-          const c = grid[y][x];
-          if (!c.open){
-            c.open = true;
-            c.el.classList.add('open');
-            if (c.mine){
-              c.el.classList.add('mine');
-              c.el.textContent = '💣';  // <-- عرض القنبلة
-            }
-            else if (c.num>0){
-              c.el.textContent = c.num;
-              c.el.classList.add('n'+c.num);
-            }
-          }
-          c.el.classList.remove('flag');
-          c.flag = false;
-        }
+      for(let y=0;y<gridHeight;y++) for(let x=0;x<gridWidth;x++){
+        const c = grid[y][x];
+        if (c.mine){ c.el.classList.add('mine'); c.el.textContent = '💣'; }
+        if (c.flag && !c.mine){ c.el.textContent='✖'; }
       }
-      if (!win){
-        grid[yHit][xHit].el.classList.add('hit');
-        showResult('خسرت! حاول مرة أخرى', false);
-      }
-      else{
-        if (soundEnabled){ winSound.currentTime=0; winSound.play().catch(()=>{}); }
-        showResult(`فزت! عدد المحاولات: ${tries}`, true);
-      }
+      if (hitX !== undefined && hitX !== null){ grid[hitY][hitX].el.classList.add('hit'); }
+
+      tries++;
+      triesEl.textContent = tries;
+
+      if (win){ if (soundEnabled){ winSound.currentTime = 0; winSound.play().catch(()=>{}); } showResult(true); }
+      else{ showResult(false); }
     }
 
     function checkWin(){
-      if (opened === gridWidth*gridHeight - minesCount){
-        tries++;
+      const total = gridWidth*gridHeight;
+      if (opened === total - minesCount){
+        // حُسب الفوز — نكشف ونحسب النقاط
         revealAll(true);
+        awardWinSecure();
       }
     }
 
-    function startTimer(){
-      timerInterval = setInterval(()=>{
-        timer++;
-        timerEl.textContent = timer;
-        if (timer - lastHint >= hintCooldown) hintBtn.disabled = false;
-      },1000);
-    }
-
-    function showResult(msg, won){
-      resultTitle.textContent = won ? 'مبروك!' : 'انتهت اللعبة';
-      resultText.textContent = msg;
+    function showResult(win){
+      if (!win){ resultTitle.textContent='خسرت!'; resultText.textContent = 'انفجر لغم.. حاول مرة أخرى.'; }
+      else{ resultTitle.textContent='مبروك!'; resultText.textContent = `فزت في ${timer} ثانية — محاولات: ${tries}`; }
       overlay.classList.add('show');
     }
 
-    newBtn.addEventListener('click', ()=>{
-      tries = 0;
-      resetBoard();
-    });
-    restart2.addEventListener('click', ()=>{
-      overlay.classList.remove('show');
-      resetBoard();
-    });
-    presetEl.addEventListener('change', ()=>{
-      tries=0;
-      resetBoard();
-    });
-    muteBtn.addEventListener('click', ()=>{
-      soundEnabled = !soundEnabled;
-      muteBtn.textContent = soundEnabled ? 'صوت: تشغيل' : 'صوت: إيقاف';
-    });
+    function startTimer(){ timerInterval = setInterval(()=>{ timer++; timerEl.textContent = timer; }, 1000); }
+    function updateState(){ flagsLeftEl.textContent = Math.max(0, minesCount - flags); }
 
-    hintBtn.addEventListener('click', ()=>{
-      if (timer - lastHint < hintCooldown) return;
-      lastHint = timer;
-      hintBtn.disabled = true;
-
-      // كشف خلية آمنة عشوائية (بدون منجم)
-      const safeCells = [];
-      for(let y=0;y<gridHeight;y++){
-        for(let x=0;x<gridWidth;x++){
-          const c = grid[y][x];
-          if (!c.open && !c.mine && !c.flag) safeCells.push(c);
-        }
-      }
-      if (safeCells.length===0) return;
-      const hintCell = safeCells[Math.floor(Math.random()*safeCells.length)];
-      hintCell.el.classList.add('hint');
-      setTimeout(()=>{ hintCell.el.classList.remove('hint'); },3000);
-    });
-
+    /********** التلميح **********/
     function startHintTimer(){
-      hintBtn.disabled = true;
-      lastHint = 0;
       if (hintTimerInterval) clearInterval(hintTimerInterval);
-      hintTimerInterval = setInterval(()=>{
-        if (timer - lastHint >= hintCooldown) hintBtn.disabled = false;
-      },1000);
+      lastHint = Date.now() - hintCooldown*1000; // متاح فوراً بعد البداية
+      updateHintButton();
+      hintTimerInterval = setInterval(updateHintButton, 500);
+    }
+    function updateHintButton(){
+      const elapsed = (Date.now() - lastHint) / 1000;
+      const remain = Math.max(0, Math.ceil(hintCooldown - elapsed));
+      if (remain === 0){ hintBtn.disabled = false; hintBtn.textContent = 'تلميح'; }
+      else { hintBtn.disabled = true; hintBtn.textContent = `تلميح (${remain}s)`; }
+    }
+    function giveHint(){
+      const safe = [];
+      for(let y=0;y<gridHeight;y++) for(let x=0;x<gridWidth;x++){
+        const c = grid[y][x];
+        if (!c.open && !c.mine && !c.flag) safe.push(c);
+      }
+      if (safe.length===0) return;
+      const pick = safe[Math.floor(Math.random()*safe.length)];
+      if (!started){ placeMines(pick.x,pick.y); startTimer(); started = true; }
+      floodOpen(pick.x,pick.y);
+      lastHint = Date.now();
+      updateHintButton();
     }
 
-    window.addEventListener('resize', ()=>{
-      resetBoard();
+    /********** أحداث الأزرار **********/
+    newBtn.addEventListener('click', ()=>{ resetBoard(); });
+    restart2.addEventListener('click', ()=>{ resetBoard(); overlay.classList.remove('show'); });
+    presetEl.addEventListener('change', ()=>{ resetBoard(); });
+    window.addEventListener('resize', ()=>{ if (presetEl.value==='auto') resetBoard(); });
+    muteBtn.addEventListener('click', ()=>{ soundEnabled = !soundEnabled; muteBtn.textContent = soundEnabled ? 'صوت: تشغيل' : 'صوت: إيقاف'; });
+    hintBtn.addEventListener('click', ()=>{ if (!hintBtn.disabled) giveHint(); });
+    document.getElementById('toggleLeaders').addEventListener('click', ()=>{
+      leadersBox.style.display = leadersBox.style.display==='none' ? 'flex' : 'none';
     });
 
-    // بدء اللعبة
-    resetBoard();
+    // تشغيل أولي
+    (function init(){ applyPreset(presetEl.value); resetBoard(); })();
+
+    /******************** الجزء الخاص بالحسابات والنقاط ********************/
+    // تسجيل الدخول جوجل
+    googleBtn.addEventListener('click', async ()=>{
+      const provider = new firebase.auth.GoogleAuthProvider();
+      await auth.signInWithPopup(provider);
+    });
+
+    // تسجيل/دخول بالبريد
+    emailSignUp.addEventListener('click', async ()=>{
+      if (!emailInput.value || !passInput.value) return alert('أدخل الإيميل وكلمة السر');
+      await auth.createUserWithEmailAndPassword(emailInput.value, passInput.value);
+    });
+    emailSignIn.addEventListener('click', async ()=>{
+      if (!emailInput.value || !passInput.value) return alert('أدخل الإيميل وكلمة السر');
+      await auth.signInWithEmailAndPassword(emailInput.value, passInput.value);
+    });
+    signOutBtn.addEventListener('click', ()=> auth.signOut());
+
+    // عند تغيّر حالة المستخدم
+    let userUnsub = null; // لمراقبة وثيقة اللاعب
+    auth.onAuthStateChanged(async (user)=>{
+      if (user){
+        whenSignedOut.style.display='none';
+        whenSignedIn.style.display='flex';
+        dispName.textContent = user.displayName || 'لاعب';
+
+        // اضمن وجود وثيقة للمستخدم
+        const uref = db.collection('users').doc(user.uid);
+        await db.runTransaction(async (tx)=>{
+          const snap = await tx.get(uref);
+          if (!snap.exists){
+            tx.set(uref, {
+              uid: user.uid,
+              email: user.email || null,
+              username: user.displayName || '',
+              points: 0,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+              updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+          }
+        });
+
+        // استمع لتغير نقاطي
+        if (userUnsub) userUnsub();
+        userUnsub = uref.onSnapshot((doc)=>{
+          if (doc.exists){
+            const d = doc.data();
+            myPointsEl.textContent = d.points || 0;
+            usernameInput.value = d.username || '';
+          }
+        });
+
+        // ابدأ المتصدرين
+        startLeadersLive();
+      } else {
+        whenSignedOut.style.display='flex';
+        whenSignedIn.style.display='none';
+        myPointsEl.textContent = '0';
+        stopLeadersLive();
+      }
+    });
+
+    // حفظ اسم المستخدم
+    saveUsernameBtn.addEventListener('click', async ()=>{
+      const user = auth.currentUser; if (!user) return alert('سجّل الدخول أولاً');
+      const name = (usernameInput.value||'').trim().slice(0,24);
+      await db.collection('users').doc(user.uid).set({username: name, updatedAt: firebase.firestore.FieldValue.serverTimestamp()}, {merge:true});
+      alert('تم حفظ الاسم');
+    });
+
+    // منح النقاط بشكل آمن عبر Cloud Function
+    async function awardWinSecure(){
+      const user = auth.currentUser;
+      if (!user){ return; } // لا نقاط بدون تسجيل
+
+      // تحديد المستوى الحالي
+      const preset = presetEl.value;
+      let level = 'easy';
+      if (preset==='normal') level='normal';
+      else if (preset==='hard') level='hard';
+      else if (preset==='auto'){ // خريطة تقريبية حسب حجم الشبكة
+        const total = gridWidth*gridHeight;
+        level = total>=384 ? 'hard' : (total>=192 ? 'normal' : 'easy');
+      }
+
+      try{
+        if (awardWinCallable){
+          const res = await awardWinCallable({ level });
+          // اختيارياً: أظهر رسالة بالنتيجة من السيرفر
+          if (res && res.data && res.data.ok){ /* تم */ }
+        } else {
+          // في حال لم تُفعّل Functions بعد، كحل مؤقت (أقل أماناً):
+          const points = levelPoints[level] || 0;
+          await db.collection('users').doc(user.uid).set({
+            points: firebase.firestore.FieldValue.increment(points),
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          }, {merge:true});
+        }
+      }catch(err){
+        console.error('awardWin failed', err);
+      }
+    }
+
+    /********** المتصدرين Top 10 **********/
+    let leadersUnsub = null;
+    function startLeadersLive(){
+      if (leadersUnsub) return; // مُفعّل بالفعل
+      const q = db.collection('users').orderBy('points','desc').limit(10);
+      leadersUnsub = q.onSnapshot((snap)=>{
+        leadersEl.innerHTML='';
+        let rank=1;
+        snap.forEach((doc)=>{
+          const d = doc.data();
+          const li = document.createElement('li');
+          li.className='leader-item';
+          li.innerHTML = `<span>#${rank} — ${escapeHtml(d.username||d.email||'لاعب')}</span><b>${d.points||0}</b>`;
+          leadersEl.appendChild(li);
+          rank++;
+        });
+        lastUpdateEl.textContent = new Date().toLocaleTimeString();
+      });
+
+      // تحديث كل دقيقة (إضافةً إلى التحديث اللحظي)
+      setInterval(()=>{ lastUpdateEl.textContent = new Date().toLocaleTimeString(); }, 60000);
+    }
+    function stopLeadersLive(){ if (leadersUnsub){ leadersUnsub(); leadersUnsub=null; } }
+
+    function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
+
+    /******************** ملاحظات أمنية ********************/
+    // لتقليل الغش: 
+    // 1) استخدم Cloud Function awardWin لتحقق ومنح النقاط فقط من السيرفر.
+    // 2) فعّل قواعد Firestore بحيث لا يمكن للمستخدم تعديل نقاطه مباشرة.
+    // 3) يمكن إضافة حد أقصى لعدد الانتصارات في الدقيقة داخل الFunction.
+
   </script>
 </body>
 </html>
